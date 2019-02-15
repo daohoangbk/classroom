@@ -136,7 +136,7 @@ export class ClassroomComponent implements OnInit {
         function gotStream(stream) {
             console.log('Adding local stream.');
             localStream = stream;
-            localVideo.setAttribute('src', stream);// = stream;
+            localVideo.srcObject = stream;
             sendMessage('got user media');
             if (isInitiator) {
                 maybeStart();
@@ -149,11 +149,11 @@ export class ClassroomComponent implements OnInit {
 
         console.log('Getting user media with constraints', constraints);
 
-        if (location.hostname !== 'localhost') {
-            requestTurn(
-                'https://computeengineondemand.appspot.com/turn?username=41784574&key=4080218913'
-            );
-        }
+        // if (location.hostname !== 'localhost') {
+            // requestTurn(
+                // 'https://computeengineondemand.appspot.com/turn?username=41784574&key=4080218913'
+            // );
+        // }
 
         function maybeStart() {
             console.log('>>>>>>> maybeStart() ', isStarted, localStream, isChannelReady);
@@ -247,10 +247,11 @@ export class ClassroomComponent implements OnInit {
                     if (xhr.readyState === 4 && xhr.status === 200) {
                         var turnServer = JSON.parse(xhr.responseText);
                         console.log('Got TURN server: ', turnServer);
-                        pcConfig.iceServers.push({
+                        let obj = {
                             'urls': 'turn:' + turnServer.username + '@' + turnServer.turn,
                             'credential': turnServer.password
-                        });
+                        };
+                        pcConfig.iceServers.push(obj);
                         turnReady = true;
                     }
                 };
@@ -262,7 +263,7 @@ export class ClassroomComponent implements OnInit {
         function handleRemoteStreamAdded(event) {
             console.log('Remote stream added.');
             remoteStream = event.stream;
-            remoteVideo.setAttribute('src', remoteStream);// = remoteStream;
+            remoteVideo.srcObject = remoteStream;
         }
 
         function handleRemoteStreamRemoved(event) {
